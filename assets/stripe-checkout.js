@@ -62,7 +62,7 @@ d.addEventListener("click", (e) => {
                 lineItems: [{price, quantity: 1}],
                 mode: "subscription",
                 successUrl: "http://127.0.0.1:5500/assets/stripe-success.html",
-                cancelUrl: "http://127.0.0.1:5500/assets/stripe-success.html",
+                cancelUrl: "http://127.0.0.1:5500/assets/stripe-cancel.html",
             })
                 .then(res => {
                     console.log(res)
