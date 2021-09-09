@@ -1,3 +1,4 @@
+import stripeKeys from "./stripe-keys.js";
 import STRIPE_KEYS from "./stripe-keys.js";
 
 // console.log(STRIPE_KEYS)
@@ -12,6 +13,8 @@ const d = document,
         },
     };
 let products,prices;
+
+const moneyFormat = num => `$${num.slice(0, -2)},${num.slice(-2)}`;
 
 Promise.all([
     fetch('https://api.stripe.com/v1/products', fetchOptions),
@@ -34,7 +37,8 @@ Promise.all([
             $template.querySelector("figcaption").innerHTML = `
                 ${productData[0].name}
                 <br>
-                $${el.currency.toUpperCase()} ${el.unit_amount_decimal.slice(0, -2)},00 
+                ${moneyFormat(el.unit_amount_decimal)}
+                ${el.currency.toUpperCase()} 
             `;
 
 
@@ -47,4 +51,25 @@ Promise.all([
         console.log(err)
         let message = err.statusText || "Ocurrió un error al conectarse con la API de Stripe";
         $tacos.innerHTML = `<p>Error ${err.status}: ${message} </p>`;
-    })
+    });
+
+d.addEventListener("click", (e) => {
+    if (e.target.matches(".taco *")) {
+        let price = e.target.parentElement.getAttribute("data-price");
+        console.log(price)
+        Stripe(STRIPE_KEYS.public)
+            .redirectToCheckout({
+                lineItems: [{price, quantity: 1}],
+                mode: "subscription",
+                successUrl: "http://127.0.0.1:5500/assets/stripe-success.html",
+                cancelUrl: "http://127.0.0.1:5500/assets/stripe-success.html",
+            })
+                .then(res => {
+                    console.log(res)
+                    if(res.error) {
+                        $tacos.insertAdjacentHTML("afterend", res.error.message)
+                    }
+                })
+
+    }
+})
