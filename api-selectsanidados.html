@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Anidados</title>
+</head>
+<body>
+    <h1>Select Anidados</h1>
+    <h2>Argentina</h2>
+    <label for="select-primary">Provincia</label>
+    <select name="primary" id="select-primary">
+        <option value="">Elige una provincia</option>
+    </select>
+    <p></p>
+    <label for="select-secondary">Municipio</label>
+    <select name="secondary" id="select-secondary">
+        <option value="">Elige un municipio </option>
+    </select>
+    <p></p>
+    <script >
+        const d = document,
+            $selectPrimary = d.getElementById("select-primary"),
+            $selectSecondary = d.getElementById("select-secondary");
+        let url
+        function loadStates() {
+            fetch (`https://apis.datos.gob.ar/georef/api/provincias`)
+                .then((res) => res.ok ? res.json() : Promise.reject(res))
+                .then((json) => {
+                    console.log(json);
+                    let $options = `<option value="">Elige una provincia</option>`;
+                    json.provincias.forEach(el => {
+                        $options += `<option value="${el.id}">${el.nombre} </option>`;
+                    });
+                    $selectPrimary.innerHTML = $options;
+
+                })
+                .catch((err) => {
+                    console.log(err);
+                    let message = err.statusText || "Ocurrio un error con la carga de la provincia";
+                    $selectPrimary.nextElementSibling.innerHTML = `Error ${err.status}: ${message} `;
+                })
+        }
+
+        function loadTowns(state) {
+            console.log(state)
+            fetch (`https://apis.datos.gob.ar/georef/api/municipios?provincia=${state}&campos=id,nombre&max=100`)
+                .then((res) => res.ok ? res.json() : Promise.reject(res))
+                .then((json) => {
+                    console.log(json)
+                    let $options = `<option value="">Elige un municipio </option>`;
+                    json.municipios.forEach((el) => {
+                        $options += `<option value="${el.id}">${el.nombre}</option>`; 
+                    })
+                    $selectSecondary.innerHTML = $options;
+                })
+                .catch((err) => {
+                    console.log(err);
+                    let message = err.statusText || "Ocurrió un error con la carga del municipio";
+                    $selectSecondary.nextElementSibling.innerHTML = `Error ${err.status}: ${message} `;
+                })
+        }
+        d.addEventListener("DOMContentLoaded", (e) => loadStates());
+
+        $selectPrimary.addEventListener("change", (e) => loadTowns(e.target.value));
+    </script>
+    
+</body>
+</html>
