@@ -81,7 +81,9 @@
     </style>
 </head>
 <body>
-    <h1>WordPress REST API</h1>
+    <header class="navbar">
+        <h1>WordPress REST API</h1>
+    </header>
     <article id="site" class="site"></article>
     <section id="posts" class="posts"></section>
     <img src="/assets/bars.svg" alt="Cargando..." class="loader">
@@ -113,7 +115,7 @@
             $loader = d.querySelector(".loader"),
             $template = d.getElementById("post-template").content,
             $fragment = d.createDocumentFragment(),
-            DOMAIN = "https://lucylara.com",
+            DOMAIN = "https://idearvlog.com",
             SITE = `${DOMAIN}/wp-json`,
             API_WP = `${SITE}/wp/v2`,
             POSTS = `${API_WP}/posts?_embed`,
@@ -159,9 +161,9 @@
                         $template.querySelector(".post-title").innerHTML = el.title.rendered;
                         $template.querySelector(".post-author").innerHTML = `
                         <img src="${el._embedded.author[0].avatar_urls["48"]}" alt="${el._embedded.author[0].name}" >
-                        <figcaption >${el._embedded.author[0].name}</figcaption>
+                        <figcaption >Por: ${el._embedded.author[0].name}</figcaption>
                         `;
-                        $template.querySelector(".post-date").innerHTML = new Date(el.date).toLocaleDateString();
+                        $template.querySelector(".post-date").innerHTML = new Date(el.date).toLocaleString();
                         $template.querySelector(".post-link").href = el.link;
                         $template.querySelector(".post-excerpt").innerHTML = el.excerpt.rendered.replace("[&hellip;]", "...");
                         $template.querySelector(".post-categories").innerHTML = `
